@@ -6,8 +6,8 @@ app.use(cors())
 app.use(express.json())
 const mongoose = require("mongoose");
 const UserModel = require("./models/Users");
-
-mongoose.connect('mongodb+srv://stevecarter1123:d29Zrrqap6pWwPq8@cluster0.f6gpx.mongodb.net/sample_mflix')
+const URI = 'mongodb+srv://stevecarter1123:d29Zrrqap6pWwPq8@cluster0.f6gpx.mongodb.net/sample_mflix'
+mongoose.connect(URI)
 app.get("/", (req, res) => res.send("Server Running..."));
 app.get("/getUsers", (request, res) => {
     UserModel.find()
@@ -28,6 +28,4 @@ app.post("/addUser", async (request, result) => {
     
 })
 
-app.listen(3000, () => {
-    console.log("Server running!")
-})
+export default app
