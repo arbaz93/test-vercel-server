@@ -2,8 +2,15 @@ const express = require("express");
 const app = express();
 
 const cors = require("cors");
-app.use(cors())
+const corsConfig = {
+    origin: "*",
+    credential: true,
+    methods: ["GET", "POST", "PUT", "DELETE"]
+}
+app.options("", cors(corsConfig))
+app.use(cors(corsConfig))
 app.use(express.json())
+
 const mongoose = require("mongoose");
 const UserModel = require("./models/Users");
 const URI = 'mongodb+srv://stevecarter1123:d29Zrrqap6pWwPq8@cluster0.f6gpx.mongodb.net/sample_mflix'
