@@ -13,9 +13,14 @@ app.use(express.json())
 
 const mongoose = require("mongoose");
 const UserModel = require("./models/Users");
-const URI = 'mongodb+srv://stevecarter1123:d29Zrrqap6pWwPq8@cluster0.f6gpx.mongodb.net/sample_mflix'
+const ContactModel = require("./models/Contacts")
+
+const URI = 'mongodb+srv://stevecarter1123:d29Zrrqap6pWwPq8@cluster0.f6gpx.mongodb.net/artailors'
 mongoose.connect(URI)
+
 app.get("/", (req, res) => res.send("Server Running..."));
+
+// Users Route
 app.get("/getUsers", (request, res) => {
     UserModel.find()
         .then(result => { res.json(result) })
@@ -24,7 +29,7 @@ app.get("/getUsers", (request, res) => {
 app.post("/addUser", async (request, result) => {
     const user = request.body;
     const newUser = new UserModel(user)
-    if(await UserModel.exists({email: user.email})) {
+    if(await UserModel.exists({username: user.username})) {
         result.json({...user, status: "User already exist"})
     } else {
         await newUser.save()
@@ -33,6 +38,33 @@ app.post("/addUser", async (request, result) => {
     
     // console.log(request.body)
     
+})
+
+// Contacts Route
+app.get("/getContacts", (request, res) => {
+    ContactModel.find()
+        .then(result => { res.json(result) })
+        .catch(err => {res.json(err)})
+})
+app.post("/addContact", async (request, result) => {
+    const contact = request.body;
+    const newContact = new ContactModel(contact)
+    if(await ContactModel.exists({phone: contact.phone})) {
+        result.json({...contact, status: "Contact already exist"})
+    } else {
+        await newContact.save()
+        result.json(contact)
+    }
+})
+app.post("/deleteContact", async (request, result) => {
+    const id = request.body['_id'];
+    
+    try {
+        await ContactModel.findByIdAndDelete(id)
+        result.json("suceess")
+    } catch(err) {
+        result.json(err)
+    }
 })
 
 export default app
