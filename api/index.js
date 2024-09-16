@@ -21,23 +21,14 @@ mongoose.connect(URI)
 app.get("/", (req, res) => res.send("Server Running..."));
 
 // Users Route
-app.get("/getUsers", (request, res) => {
-    UserModel.find()
-        .then(result => { res.json(result) })
-        .catch(err => {res.json(err)})
-})
-app.post("/addUser", async (request, result) => {
+app.post("/auth", async (request, result) => {
     const user = request.body;
-    const newUser = new UserModel(user)
-    if(await UserModel.exists({username: user.username})) {
-        result.json({...user, status: "User already exist"})
+    const st = await UserModel.findOne({username: user.username, password: user.password});
+    if(st != null) {
+        result.json({...st, status: "Login successfull"})
     } else {
-        await newUser.save()
-        result.json(user)
+        result.json({status: "Username or Password is wrong"})
     }
-    
-    // console.log(request.body)
-    
 })
 
 // Contacts Route
