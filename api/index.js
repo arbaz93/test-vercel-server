@@ -23,37 +23,51 @@ app.get("/", (req, res) => res.send("Server Running..."));
 // Users Route
 app.post("/auth", async (request, result) => {
     const user = request.body;
-    const st = await UserModel.findOne({username: user.username, password: user.password});
-    if(st != null) {
-        result.json({...st, status: "Login successfull"})
+    const st = await UserModel.findOne({ username: user.username, password: user.password });
+    if (st != null) {
+        result.json({ ...st, status: "Login successfull" })
     } else {
-        result.json({status: "Username or Password is wrong"})
+        result.json({ status: "Username or Password is wrong" })
     }
 })
 
 // Contacts Route
 app.get("/getContacts", (request, res) => {
+
     ContactModel.find()
         .then(result => { res.json(result) })
-        .catch(err => {res.json(err)})
+        .catch(err => { res.json(err) })
 })
 app.post("/addContact", async (request, result) => {
     const contact = request.body;
     const newContact = new ContactModel(contact)
-    if(await ContactModel.exists({phone: contact.phone})) {
-        result.json({...contact, status: "Contact already exist"})
+    if (await ContactModel.exists({ phone: contact.phone })) {
+        result.json({ ...contact, status: "Contact already exist" })
     } else {
         await newContact.save()
         result.json(contact)
     }
 })
+app.post("/updateContact", async (request, result) => {
+    const updatedContact = request.body;
+        await ContactModel.findByIdAndUpdate(updatedContact._id, 
+            {
+                name: updatedContact.name,
+                phone: updatedContact.phone
+
+            }, 
+            {new: true})
+            .then(res => {result.json(res)})
+            .catch(err => {result.json(err)})
+
+})
 app.post("/deleteContact", async (request, result) => {
     const id = request.body['_id'];
-    
+
     try {
         await ContactModel.findByIdAndDelete(id)
         result.json("suceess")
-    } catch(err) {
+    } catch (err) {
         result.json(err)
     }
 })
